@@ -29,6 +29,7 @@ namespace ClassSchedule
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddScoped<IClassScheduleUnitOfWork, ClassScheduleUnitOfWork>();
+            services.AddHttpContextAccessor();
         }
 
         // Use this method to configure the HTTP request pipeline.

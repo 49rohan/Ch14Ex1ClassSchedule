@@ -7,18 +7,23 @@ namespace ClassSchedule.Controllers
     public class HomeController : Controller
     {
         private readonly IClassScheduleUnitOfWork data;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public HomeController(IClassScheduleUnitOfWork unitOfWork)
+        public HomeController(IClassScheduleUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             data = unitOfWork;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public ViewResult Index(int id)
         {
+            // access HttpContext through IHttpContextAccessor
+            var httpContext = _httpContextAccessor.HttpContext;
+
             // if day id passed to action method, store in session
             if (id > 0)
             {
-                HttpContext.Session.SetInt32("dayid", id);
+                httpContext.Session.SetInt32("dayid", id);
             }
 
             // options for Days query
