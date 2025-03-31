@@ -12,4 +12,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ClassScheduleTests\ClassScheduleTests.csproj" />
+  </ItemGroup>
+
 </Project>
