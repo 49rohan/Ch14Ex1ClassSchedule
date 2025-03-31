@@ -6,17 +6,18 @@ namespace ClassSchedule.Controllers
 {
     public class ClassController : Controller
     {
-        private ClassScheduleUnitOfWork data { get; set; }
-        public ClassController(ClassScheduleContext ctx)
+        private readonly IClassScheduleUnitOfWork data;
+
+        public ClassController(IClassScheduleUnitOfWork unitOfWork)
         {
-            data = new ClassScheduleUnitOfWork(ctx);
+            data = unitOfWork;
         }
 
-        public RedirectToActionResult Index() 
+        public RedirectToActionResult Index()
         {
             // clear session and navigate to list of classes
             HttpContext.Session.Remove("dayid");
-            return RedirectToAction("Index", "Home"); 
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -38,19 +39,21 @@ namespace ClassSchedule.Controllers
         public IActionResult Add(Class c)
         {
             string operation = (c.ClassId == 0) ? "Add" : "Edit";
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 if (c.ClassId == 0)
                     data.Classes.Insert(c);
                 else
                     data.Classes.Update(c);
-                data.Classes.Save();
+                data.Save();
 
                 string verb = (operation == "Add") ? "added" : "updated";
                 TempData["msg"] = $"{c.Title} {verb}";
 
                 return this.GoToClasses();
             }
-            else {
+            else
+            {
                 this.LoadViewBag(operation);
                 return View();
             }
@@ -68,9 +71,8 @@ namespace ClassSchedule.Controllers
         public RedirectToActionResult Delete(Class c)
         {
             c = data.Classes.Get(c.ClassId); // so can get class title for notification message
-            
             data.Classes.Delete(c);
-            data.Classes.Save();
+            data.Save();
 
             TempData["msg"] = $"{c.Title} deleted";
 
@@ -80,19 +82,23 @@ namespace ClassSchedule.Controllers
         // private helper methods
         private Class GetClass(int id)
         {
-            var classOptions = new QueryOptions<Class> {
-                Includes = "Teacher, Day",
-                Where = c => c.ClassId == id
-            };
-            return data.Classes.Get(classOptions);
+
+        var classOptions = new QueryOptions<Class>
+        {
+            Includes = "Teacher, Day",
+            Where = c => c.ClassId == id
+        };
+        return data.Classes.Get(classOptions);
         }
 
         private void LoadViewBag(string operation)
         {
-            ViewBag.Days = data.Days.List(new QueryOptions<Day> {
+            ViewBag.Days = data.Days.List(new QueryOptions<Day>
+            {
                 OrderBy = d => d.DayId
             });
-            ViewBag.Teachers = data.Teachers.List(new QueryOptions<Teacher> {
+            ViewBag.Teachers = data.Teachers.List(new QueryOptions<Teacher>
+            {
                 OrderBy = t => t.LastName
             });
 

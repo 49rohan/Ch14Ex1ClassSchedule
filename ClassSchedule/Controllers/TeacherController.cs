@@ -5,12 +5,17 @@ namespace ClassSchedule.Controllers
 {
     public class TeacherController : Controller
     {
-        private Repository<Teacher> teachers { get; set; }
-        public TeacherController(ClassScheduleContext ctx) => teachers = new Repository<Teacher>(ctx);
+        private readonly IRepository<Teacher> teachers;
+
+        public TeacherController(IRepository<Teacher> teacherRepository)
+        {
+            teachers = teacherRepository;
+        }
 
         public ViewResult Index()
         {
-            var options = new QueryOptions<Teacher> {
+            var options = new QueryOptions<Teacher>
+            {
                 OrderBy = t => t.LastName
             };
             return View(teachers.List(options));
@@ -22,13 +27,15 @@ namespace ClassSchedule.Controllers
         [HttpPost]
         public IActionResult Add(Teacher teacher)
         {
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 teachers.Insert(teacher);
                 teachers.Save();
                 TempData["msg"] = $"{teacher.FullName} added to list of teachers";
                 return RedirectToAction("Index");
             }
-            else{
+            else
+            {
                 return View(teacher);
             }
         }

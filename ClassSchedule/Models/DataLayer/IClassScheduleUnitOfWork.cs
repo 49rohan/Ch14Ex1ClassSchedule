@@ -2,10 +2,10 @@
 {
     public interface IClassScheduleUnitOfWork
     {
-        public Repository<Day> Days { get; }
-        public Repository<Teacher> Teachers { get; }
-        public Repository<Class> Classes { get; }
+        IRepository<Day> Days { get; }
+        IRepository<Teacher> Teachers { get; }
+        IRepository<Class> Classes { get; }
 
-        public void Save();
+        void Save();
     }
 }
